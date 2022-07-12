@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montagu+Slab&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/css.css">
+    <link rel="shortcut icon" href="images/images.png" type="image/x-icon"/>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analyse League</title>
+</head>
+<body>
+    <div class="header">
+        <div class="nav">
+            <div class="nav-icon">
+                <p>Data Analyse</p>
+            </div>
+            <div class="nav-icon">
+                <p><a href="contact.html">Contact</a></p>
+            </div>
+            <div class="nav-icon">
+                <p>Documentation</p>
+            </div>
+            <div class="nav-contact">                
+                <p><a href="galerie.html">Galerie</a></p>              
+            </div>
+        </div>        
+    </div>
+
+    <div class="content">
+        <div class="recherche">
+            <img src="images/Icone_main.png" alt="" class="img"/>
+            <br>
+            <form action="playersearch.html" method="GET">
+                <input type="text" id="player" value="player" name="player" placeholder="Cherche ton joueuer">
+                <input type="submit" value="Envoyer">
+                <button type="button" id="mybutton">test</button>
+            </form>
+        </div>
+        <div class="player">
+            <div class="Player1" id="resultAPI ">
+                <img src="images/1390.png" alt="" class="profil-img">
+                <p>Pas d'info</p>
+                <p>Pas d'info</p>            
+            </div>
+            <div class="Player1" id="resultAPI3">
+                <img src="images/1390.png" alt="" class="profil-img">
+                <p>Pas d'info</p>            
+            </div>                 
+        </div>    
+    </div>    
+    <div class="footer">    
+        <p>Data Analyste League | Copyright Mathéo " Racooon " Sital</p>
+    </div>
+    
+    <script>
+        var player = "ZemmöurPrésident";
+        var RGAPI = "RGAPI-b829d5be-0986-4176-86a9-2eaa8c236b65"
+        var mybutton = document.getElementById('mybutton');
+        mybutton.addEventListener('click', function()
+        {
+            var player = document.getElementById('player').value;
+            alert(player);
+            let endPoint = 'https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+player+'?api_key='+RGAPI+'';        
+        //gestion d'erreur 
+        function ajaxGet(url, callback)
+        {
+            let endPoint = 'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/'+idPlayer+'?api_key='+RGAPI+'';
+            var req = new XMLHttpRequest();
+            req.open('GET', url);
+            req.addEventListener('load', function()
+            {
+                if(req.status == 200 || req.status < 400)
+                {       
+                    callback(req.responseText);                  
+                }
+                else
+                {
+                    console.error(req.status + ' ' + req.statusText + ' ' + url);
+                }
+            })
+            req.addEventListener('Error', function()
+            {
+                console.error("Erreur avec l'url: " + url);
+            })
+            req.send(null);
+        }
+        var idPlayer;
+        var contenuPage = document.getElementById('resultAPI');
+        ajaxGet(endPoint, function(reponse)
+        {
+            let information = JSON.parse(reponse);
+            idPlayer = information.id      
+            let contenu = "";
+            contenu += "<img src='http://ddragon.leagueoflegends.com/cdn/11.22.1/img/profileicon/"+information.profileIconId+".png' alt='' class='profil-img'>";
+            contenu += '<p>Pseudo: '+information.name+'<p>';
+            contenu += '<p>Level: '+information.summonerLevel+'</p>';    
+            let endPoint = 'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/'+idPlayer+'?api_key='+RGAPI+'';
+            ajaxGet(endPoint, function(reponse)
+            {
+                let information2 = JSON.parse(reponse);
+                   console.log(information2[0].leagueId);
+                   var wins = information2[0].wins;
+                   var losses = information2[0].losses;
+                   var total = wins + losses;
+                   var winrate = ((losses*100/total));
+                    contenu += "<p> Cote: " + information2[0].tier + ' '+ information2[0].rank + ' ' + information2[0].leaguePoints + '</p>';
+                    contenu += "<p> Wins: " + wins + "/" +losses+ "</p>"
+                    contenu += "<svg viewBox='0 0 32 32'>";
+                    contenu += "<circle r='16' cx='16' cy='16' style='stroke-dasharray:"+winrate+" 100'/>";
+                    contenu += "</svg>"
+                    contenuPage.innerHTML = contenu;
+                   })       
+            contenuPage.innerHTML = contenu;
+        })
+        })
+        
+    </script>
+    <script>
+        player = "Hairtox"
+        let endPointa = 'https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+player+'?api_key='+RGAPI+'';        
+        //gestion d'erreur 
+        function ajaxGet(url, callback)
+        {
+            let endPointa = 'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/'+idPlayer+'?api_key='+RGAPI+'';
+            var req = new XMLHttpRequest();
+            req.open('GET', url);
+            req.addEventListener('load', function()
+            {
+                if(req.status == 200 || req.status < 400)
+                {       
+                    callback(req.responseText);                  
+                }
+                else
+                {
+                    console.error(req.status + ' ' + req.statusText + ' ' + url);
+                }
+            })
+            req.addEventListener('Error', function()
+            {
+                console.error("Erreur avec l'url: " + url);
+            })
+            req.send(null);
+        }
+        var idPlayer;
+        var contenuPage2 = document.getElementById('resultAPI3');
+        ajaxGet(endPointa, function(reponse)
+        {
+            let information = JSON.parse(reponse);
+            idPlayer = information.id      
+            let contenu2 = "";
+            contenu2 += "<img src='http://ddragon.leagueoflegends.com/cdn/11.22.1/img/profileicon/"+information.profileIconId+".png' alt='' class='profil-img'>";
+            contenu2 += '<p>Pseudo: '+information.name+'<p>';
+            contenu2 += '<p>Level: '+information.summonerLevel+'</p>';    
+            let endPointa = 'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/'+idPlayer+'?api_key='+RGAPI+'';
+            ajaxGet(endPointa, function(reponse)
+            {
+                let information2 = JSON.parse(reponse);
+                   console.log(information2[0].leagueId);
+                   var wins = information2[0].wins;
+                   var losses = information2[0].losses;
+                   var total = wins + losses;
+                   var winrate = ((losses*100/total));
+                    contenu2 += "<p> Cote: " + information2[0].tier + ' '+ information2[0].rank + ' ' + information2[0].leaguePoints + '</p>';
+                    contenu2 += "<p> Wins: " + wins + "/" +losses+ "</p>"
+                    contenu2 += "<svg viewBox='0 0 32 32'>";
+                    contenu2 += "<circle r='16' cx='16' cy='16' style='stroke-dasharray:"+winrate+" 100'/>";
+                    contenu2 += "</svg>"   
+                    contenuPage2.innerHTML = contenu2;
+                   })       
+            contenuPage2.innerHTML = contenu2;
+        }) 
+    </script>
+</body>
+</html>

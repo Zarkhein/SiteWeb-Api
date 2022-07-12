@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montagu+Slab&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/css.css">
+    <link rel="shortcut icon" href="images/images.png" type="image/x-icon"/>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="header">
+        <div class="nav">
+            <div class="nav-icon">
+                <p>Data Analyse</p>
+            </div>
+            <div class="nav-icon">
+                <p>Contact</p>
+            </div>
+            <div class="nav-icon">
+                <p>Documentation</p>
+            </div>
+            <div class="nav-contact">                
+                <p><a href="galerie.html">Galerie</a></p>              
+            </div>
+        </div>        
+    </div>
+        <div id ="resultAPI" class="contentTable">
+            <table>
+                <tr>
+                    <td><img src="images/1390.png" alt="" class="img"></td>
+                    <td>Player</td>         
+                    <td>670</td>                    
+                </tr>
+                <tr>
+                    <td rowspan="2"><img src="images/1390.png" alt="" class="img"></td>
+                    <td colspan="2">Cote</td>
+                </tr>
+                <tr>
+                    <td>LP</td>
+                    <td>V/D</td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td colspan="3">MATCH</td>
+                </tr>
+                <tr>
+                    <td><img src='http://ddragon.leagueoflegends.com/cdn/11.23.1/img/profileicon/1000.png' class="img"/></td>
+                    <td>MATCH KDA CS VICTORY</td>
+                    <td>item</td>
+                </tr>
+                <tr>
+                    <td><img src='http://ddragon.leagueoflegends.com/cdn/11.23.1/img/profileicon/1000.png' class="img"/></td>
+                    <td>MATCH KDA CS VICTORY</td>
+                    <td>item</td>
+                </tr>
+                <tr>
+                    <td><img src='http://ddragon.leagueoflegends.com/cdn/11.23.1/img/profileicon/1000.png' class="img"/></td>
+                    <td>MATCH KDA CS VICTORY</td>
+                    <td>item</td>
+                </tr>
+                <tr>
+                    <td><img src='http://ddragon.leagueoflegends.com/cdn/11.23.1/img/profileicon/1000.png' class="img"/></td>
+                    <td>MATCH KDA CS VICTORY</td>
+                    <td>item</td>
+                </tr>
+                <tr>
+                    <td><img src='http://ddragon.leagueoflegends.com/cdn/11.23.1/img/profileicon/1000.png' class="img"/></td>
+                    <td>MATCH KDA CS VICTORY</td>
+                    <td>item</td>
+                </tr>
+            </table>     
+        </div>         
+        <div class="footer">    
+        <p>Data Analyste League | Copyright Mathéo " Racooon " Sital</p>
+    </div> 
+    
+    <script> 
+        var str = document.location.href;
+        var url = new URL(str);
+        var player = url.searchParams.get("player");
+        var RGAPI = "RGAPI-b829d5be-0986-4176-86a9-2eaa8c236b65"
+        
+        //alert("URL" + str);
+        let endPoint = 'https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+player+'?api_key='+RGAPI+'';        
+        //gestion d'erreur 
+        function ajaxGet(url, callback)
+        {
+            let endPoint = 'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/'+player+'?api_key='+RGAPI+'';
+            var req = new XMLHttpRequest();
+            req.open('GET', url);
+            req.addEventListener('load', function()
+            {
+                if(req.status == 200 || req.status < 400)
+                {       
+                    callback(req.responseText);                  
+                }
+                else
+                {
+                    console.error(req.status + ' ' + req.statusText + ' ' + url);
+                }
+            })
+            req.addEventListener('Error', function()
+            {
+                console.error("Erreur avec l'url: " + url);
+            })
+            req.send(null);
+        }
+
+        var contenuPage = document.getElementById('resultAPI');
+
+        ajaxGet(endPoint, function(reponse)
+        {
+            let information = JSON.parse(reponse);
+            idPlayer = information.id
+            puuidPlayer = information.puuid     
+            alert(puuidPlayer);
+            let contenu = "";
+            contenu += "<table><tr><td><img src='http://ddragon.leagueoflegends.com/cdn/11.23.1/img/profileicon/"+information.profileIconId+".png' alt='' class='img'></td>";
+            contenu += "<td>"+information.name+"</td>";
+            contenu += "<td>Niveau: "+information.summonerLevel+"</td></tr>";
+            let endPoint = 'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/'+idPlayer+'?api_key='+RGAPI+'';
+            let endPointGame = 'https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/'+puuidPlayer+'/ids?type=ranked&start=0&count=1?api_key='+RGAPI+'';
+            ajaxGet(endPoint, function(reponse)
+            {
+                let information2 = JSON.parse(reponse);
+                    rankIcon = information2[0].tier;
+                    console.log(rankIcon);
+                    contenu += "<td rowspan='2'><img src='images/Emblem_"+information2[0].tier+".png' alt='' class='img'></td>";
+                    
+                    contenu += "<td colspan='2'>Cote: "+information2[0].tier+"</td>";
+                    contenu += "<tr><td>LP: "+information2[0].leaguePoints+"</td>";
+                    contenu += "<td>V: "+information2[0].wins+"/D:"+information2[0].losses+"</td>";
+                    contenuPage.innerHTML = contenu;
+                    let endPoint = 'https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/'+idPlayer+'?api_key='+RGAPI+'';
+                    ajaxGet(endPoint, function(reponse)
+                    {
+                        let information3 = JSON.parse(reponse);
+                        playerChamp1 = information3[0].championId;
+                        playerChamp2 = information3[1].championId;
+                        playerChamp3 = information3[2].championId;
+                        let endPoint = 'http://ddragon.leagueoflegends.com/cdn/11.23.1/data/fr_FR/champion.json'
+                        ajaxGet(endPoint, function(reponse)
+                        {
+                            let champInfo = JSON.parse(reponse);
+                            let ChampData = champInfo.data;
+                            for(var i in ChampData){
+                                if(ChampData[i].key == playerChamp1)
+                                {
+                                    contenu += "<tr>";
+                                    contenu += "<td colspan='3'>Maitrise</td>";
+                                    contenu += "</tr>";
+                                    contenu += "<tr>";
+                                    contenu += "<td><img src='http://ddragon.leagueoflegends.com/cdn/11.23.1/img/champion/"+ChampData[i].id+".png' alt='' class='img'></td>"
+                                    contenu += "<td>"+ChampData[i].id+"</td>";
+                                    contenu += "<td>"+information3[0].championPoints+" Points</td></tr>";
+                                    
+                                    contenuPage.innerHTML = contenu;                                   
+                                }                                
+                            }
+
+                            for(var i in ChampData){
+                                if(ChampData[i].key == playerChamp2)
+                                {
+                                    contenu += "<tr><td><img src='http://ddragon.leagueoflegends.com/cdn/11.23.1/img/champion/"+ChampData[i].id+".png' alt='' class='img'></td>"
+                                    contenu += "<td>"+ChampData[i].id+"</td>";
+                                    contenu += "<td>"+information3[1].championPoints+" Points</td></tr>";
+                                    contenuPage.innerHTML = contenu;  
+                                }                                
+                            }
+
+                            for(var i in ChampData){
+                                if(ChampData[i].key == playerChamp3)
+                                {
+                                    contenu += "<tr><td><img src='http://ddragon.leagueoflegends.com/cdn/11.23.1/img/champion/"+ChampData[i].id+".png' alt='' class='img'></td>"
+                                    contenu += "<td>"+ChampData[i].id+"</td>";
+                                    contenu += "<td>"+information3[2].championPoints+" Points</td></tr></table>";
+                                    contenuPage.innerHTML = contenu;  
+                                }                                
+                            }
+                        })
+                    })
+            })       
+            contenuPage.innerHTML = contenu;
+            ajaxGet(endPointGame, function(reponse)
+            {
+                let informationGame = JSON.parse(reponse);
+                console.log(informationGame[0])
+            })
+            
+        })
+        
+    </script>
+</body>
+</html>
+
+
